@@ -11,8 +11,10 @@ export const useTsvData = () => {
         setIsLoading(true);
         setError(null);
         
-        // Lógica de leitura simples e direta do arquivo padrão.
-        const response = await fetch('/data.tsv');
+        // --- AQUI ESTÁ A CORREÇÃO FINAL ---
+        // Usamos a variável especial do Vite para garantir que o caminho esteja sempre correto,
+        // tanto localmente quanto no site publicado.
+        const response = await fetch(`${import.meta.env.BASE_URL}data.tsv`);
         
         if (!response.ok) {
           throw new Error(`Erro ao carregar arquivo TSV: ${response.status}`);
@@ -30,7 +32,6 @@ export const useTsvData = () => {
         console.error('Erro ao carregar arquivo TSV:', err);
         setError(err instanceof Error ? err.message : 'Erro desconhecido');
         
-        // Mantemos o fallback para o caso de o arquivo data.tsv ser deletado por acidente.
         const defaultData = `02/04/2025	6	8	42,86%	4	0	0	0	0	2	2	2	4	0	4	2	4	33,33%	4	4	50,00%	0	0		0	0	0	0	0	0	0	0	0	0	0	0	2	0	2	1	1	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	2	2	0	0	2	0	1	1	0	0	0	0	0	0`;
         setCsvData(defaultData);
       } finally {
@@ -39,8 +40,7 @@ export const useTsvData = () => {
     };
 
     loadTsvFile();
-  }, []); // O array vazio [] garante que isso rode apenas uma vez, quando o site carrega.
+  }, []);
 
-  // Retornamos o setCsvData para que o botão de importar ainda funcione para a sessão atual.
   return { csvData, setCsvData, isLoading, error };
 };

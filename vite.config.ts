@@ -4,7 +4,8 @@ import path from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // ESTA LINHA É A MAIS IMPORTANTE PARA O DEPLOY
+  
+  // A linha abaixo agora está ATIVA para o deploy.
   base: '/dados-plt-visualizer/', 
   
   plugins: [react()],
