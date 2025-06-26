@@ -4,9 +4,8 @@ import path from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // A linha abaixo SÓ é necessária para publicar no GitHub Pages.
-  // Vamos deixá-la comentada enquanto desenvolvemos localmente.
-  // base: '/pallet-data-visualizer-11-main/', 
+  // ESTA LINHA É A MAIS IMPORTANTE PARA O DEPLOY
+  base: '/dados-plt-visualizer/', 
   
   plugins: [react()],
 
