@@ -29,7 +29,9 @@ export const MainKPICards = ({ aggregatedData }: MainKPICardsProps) => {
               ) : (
                 <TrendingDown className="h-4 w-4 text-destructive mr-1" />
               )}
-              <span className="text-xs text-muted-foreground">vs período anterior</span>
+              <span className="text-xs text-muted-foreground">
+                Performance atual
+              </span>
             </div>
           </div>
           <div className="h-16 w-16 bg-secondary/20 rounded-full flex items-center justify-center hover:rotate-12 transition-transform duration-300">
