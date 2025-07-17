@@ -1,11 +1,10 @@
-import { useState, useEffect, ReactNode } from 'react';
 
+import { useState, useEffect, ReactNode } from 'react';
 import { useProcessedData } from "@/hooks/useProcessedData";
 import { useFilteredData } from "@/hooks/useFilteredData";
 import { useAggregatedData } from "@/hooks/useAggregatedData";
 import { useTrendData } from "@/hooks/useTrendData";
 import { useTsvData } from "@/hooks/useTsvData";
-
 import { formatDateForInput, getYesterday } from "@/utils/dateUtils";
 
 interface DataContextType {
@@ -33,23 +32,26 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  // Usar o novo hook para carregar dados do TSV
   const { csvData, setCsvData, isLoading, error } = useTsvData();
 
-  // Inicializa datas padrão com "ontem"
+  // Initialize default dates for "ontem"
   useEffect(() => {
     const yesterday = getYesterday();
     setStartDate(formatDateForInput(yesterday));
     setEndDate(formatDateForInput(yesterday));
   }, []);
 
+  // Use custom hooks for data processing
   const processedData = useProcessedData(csvData);
   const filteredData = useFilteredData(processedData, selectedPeriod, startDate, endDate);
   const aggregatedData = useAggregatedData(filteredData);
   const trendData = useTrendData(filteredData);
 
+  // Get the latest date from the data
   const getLatestDataDate = () => {
     if (processedData.length === 0) return '';
-
+    
     const latestDate = processedData
       .filter(item => item.total() > 0)
       .sort((a, b) => {
@@ -57,10 +59,11 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         const dateB = new Date(b.date.split('/').reverse().join('-'));
         return dateB.getTime() - dateA.getTime();
       })[0];
-
+    
     return latestDate ? latestDate.date : '';
   };
 
+  // Log de status do carregamento para debug
   useEffect(() => {
     if (error) {
       console.warn('Aviso ao carregar dados TSV:', error);
@@ -83,7 +86,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     filteredData,
     aggregatedData,
     trendData,
-    getLatestDataDate,
+    getLatestDataDate
   };
 
   return children(contextValue);
