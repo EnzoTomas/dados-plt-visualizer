@@ -1,15 +1,19 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BarChart3, AlertTriangle, TrendingUp } from 'lucide-react';
 import { FinalDataItem } from '@/hooks/useFinalData';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { RejectTypesChart } from './RejectTypesChart';
+import { RejectTypesPareto } from './RejectTypesPareto';
 
 interface RejectTypesDashboardProps {
   finalData: FinalDataItem[];
 }
 
 export const RejectTypesDashboard = ({ finalData }: RejectTypesDashboardProps) => {
+  const [showChart, setShowChart] = useState(false);
+  
   const processedData = useMemo(() => {
     const totals = finalData.reduce((acc, item) => {
       acc.erroSistemico += item.erroSistemico;
@@ -82,26 +86,53 @@ export const RejectTypesDashboard = ({ finalData }: RejectTypesDashboardProps) =
   return (
     <Card className="animate-fade-in hover:shadow-lg transition-all duration-300">
       <CardHeader className="pb-3">
-        <div className="flex items-center space-x-3">
-          <div className="p-1.5 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-lg">
-            <BarChart3 className="h-5 w-5 text-red-600" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-1.5 bg-gradient-to-br from-red-500/10 to-orange-500/10 rounded-lg">
+              <BarChart3 className="h-5 w-5 text-red-600" />
+            </div>
+            <div>
+              <CardTitle className="text-lg font-bold text-foreground">
+                Distribuição de Tipos de Rejeitos
+              </CardTitle>
+              <p className="text-xs text-muted-foreground">
+                Total: {processedData.totalSum} rejeitos
+              </p>
+            </div>
           </div>
-          <div>
-            <CardTitle className="text-lg font-bold text-foreground">
-              Distribuição de Tipos de Rejeitos
-            </CardTitle>
-            <p className="text-xs text-muted-foreground">
-              Total: {processedData.totalSum} rejeitos
-            </p>
-          </div>
+          
+          {processedData.totalSum > 0 && (
+            <Button
+              onClick={() => setShowChart(!showChart)}
+              variant={showChart ? "default" : "outline"}
+              size="sm"
+              className="transition-all duration-300 ease-in-out hover:scale-105"
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              {showChart ? 'Lista' : 'Gráfico'}
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="p-4 space-y-4">
         {processedData.totalSum > 0 ? (
-          <RejectTypesChart 
-            priorityItems={processedData.priorityItems}
-            otherItems={processedData.otherItems}
-          />
+          <div className="transition-all duration-500 ease-in-out">
+            {showChart ? (
+              <div className="animate-fade-in">
+                <RejectTypesPareto 
+                  priorityItems={processedData.priorityItems}
+                  otherItems={processedData.otherItems}
+                />
+              </div>
+            ) : (
+              <div className="animate-fade-in">
+                <RejectTypesChart 
+                  priorityItems={processedData.priorityItems}
+                  otherItems={processedData.otherItems}
+                />
+              </div>
+            )}
+          </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
             <AlertTriangle className="h-10 w-10 mb-2 text-muted-foreground/50" />

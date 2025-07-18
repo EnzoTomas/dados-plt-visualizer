@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+// ... (sua interface FinalDataItem não muda) ...
 export interface FinalDataItem {
   date: string;
   erroSistemico: number;
@@ -18,6 +19,7 @@ export interface FinalDataItem {
   total: () => number;
 }
 
+
 export const useFinalData = () => {
   const [finalData, setFinalData] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
@@ -26,7 +28,13 @@ export const useFinalData = () => {
   useEffect(() => {
     const loadFinalData = async () => {
       try {
-        const response = await fetch('/FinalData.tsv');
+        setIsLoading(true);
+        setError(null);
+
+        // AQUI ESTÁ A CORREÇÃO
+        // Usamos a variável do Vite para montar a URL correta dinamicamente.
+        const response = await fetch(`${import.meta.env.BASE_URL}FinalData.tsv`);
+        
         if (!response.ok) {
           throw new Error('Erro ao carregar dados finais');
         }
