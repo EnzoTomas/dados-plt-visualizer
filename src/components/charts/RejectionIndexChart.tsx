@@ -55,20 +55,23 @@ export const RejectionIndexChart = ({ data }: RejectionIndexChartProps) => {
   }, [data]);
 
   const stats = useMemo(() => {
-    if (!data.length) return { average: 0, trend: 'stable' };
+  if (!data.length) return { average: 0, trend: 'stable' };
 
-    const average = data.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / data.length;
-    
-    // Calcular tendência
-    const recent = data.slice(-5);
-    const older = data.slice(-10, -5);
-    const recentAvg = recent.length > 0 ? recent.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / recent.length : 0;
-    const olderAvg = older.length > 0 ? older.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / older.length : 0;
-    
-    const trend = recentAvg > olderAvg ? 'up' : recentAvg < olderAvg ? 'down' : 'stable';
+  const average = data.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / data.length;
 
-    return { average, trend };
-  }, [data]);
+  // Cálculo de tendência somente com pelo menos 6 dias
+  if (data.length < 6) return { average, trend: 'stable' };
+
+  const recent = data.slice(-5);
+  const older = data.slice(-10, -5);
+  const recentAvg = recent.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / recent.length;
+  const olderAvg = older.reduce((sum, item) => sum + (item.rejectionRate * 100), 0) / older.length;
+
+  const trend = recentAvg > olderAvg ? 'up' : recentAvg < olderAvg ? 'down' : 'stable';
+
+  return { average, trend };
+}, [data]);
+
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
